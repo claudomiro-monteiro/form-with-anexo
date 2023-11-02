@@ -2,12 +2,14 @@
 
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { FormProvider, useForm } from 'react-hook-form'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { Form } from './components/Form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import * as SelectPrimitive from '@radix-ui/react-select'
+import { Select } from './components/Select'
 import {
-  Mail,
+  // Mail,
   PhoneCall,
   SendHorizonal,
   Trash2,
@@ -17,6 +19,8 @@ import {
 import { useEffect, useState } from 'react'
 import { phoneNumberMask } from '@/utils/phone'
 import { Triangle } from 'react-loader-spinner'
+import axios from 'axios'
+import { SelectItem } from './components/Select/SelectItem'
 // import { FileList } from '/./components/Form/FileList'
 
 const createFormSchema = z.object({
@@ -46,7 +50,7 @@ export default function Home() {
     resolver: zodResolver(createFormSchema),
   })
 
-  const { handleSubmit, watch, setValue, reset } = createForm
+  const { handleSubmit, watch, setValue, control, reset } = createForm
 
   const phoneValue = watch('cellphone')
 
@@ -54,19 +58,31 @@ export default function Home() {
     setValue('cellphone', phoneNumberMask(phoneValue))
   }, [phoneValue, setValue])
 
-  function newForm(data: CreateFormData) {
-    console.log(data.anexo)
-    console.log(JSON.stringify(data, null, 2))
-
+  async function newForm(data: CreateFormData) {
+    // console.log(data.anexo)
+    // console.log(JSON.stringify(data, null, 2))
     setSppiner(true)
-    toast.success('Formulário enviado com secesso!', {
-      position: toast.POSITION.TOP_CENTER,
-      delay: 5000,
-    })
-    setTimeout(() => {
+    try {
+      const formData = new FormData()
+      formData.append('name', data.name)
+      formData.append('email', data.email)
+      formData.append('cellphone', data.cellphone)
+      formData.append('anexo', data.anexo[0])
+
+      await axios.post('/api', formData)
       setSppiner(false)
+      toast.success('Formulário enviado com secesso!', {
+        position: toast.POSITION.TOP_CENTER,
+      })
       reset()
-    }, 5000)
+    } catch (error) {
+      console.error(error)
+      setSppiner(false)
+      toast.error(
+        'Não foi possível enviar seu contato, por favor tente mais tarde.',
+        { position: toast.POSITION.TOP_CENTER },
+      )
+    }
   }
 
   const anexoFile = watch('anexo')
@@ -79,8 +95,8 @@ export default function Home() {
   // console.log(anexoFile?.item(0)?.name)
 
   return (
-    <main className="flex h-screen flex-col items-center justify-center gap-6 bg-zinc-900">
-      <h1 className="text-2xl font-bold text-zinc-300">
+    <main className="flex h-screen flex-col items-center justify-center gap-6 bg-zinc-900 px-8">
+      <h1 className="text-center text-2xl font-bold text-zinc-300">
         Preencha o formulário e envie seu curriculo.
       </h1>
       <FormProvider {...createForm}>
@@ -96,13 +112,30 @@ export default function Home() {
             <Form.Input type="name" name="name" placeholder="Nome" />
           </Form.Field>
           <Form.ErrorMessage field="name" />
-          <Form.Field>
+          <Controller
+            name="email"
+            control={control}
+            render={({ field: { ref, onChange } }) => (
+              <SelectPrimitive.Root onValueChange={onChange}>
+                <Select ref={ref} placeholder="Selecione sua Profissão...">
+                  <SelectItem value="lcbrj@terra.com.br">
+                    Claudio Contador
+                  </SelectItem>
+                  <SelectItem value="pedidosmarju@gmail.com">Marju</SelectItem>
+                  <SelectItem value="claudomiromonteiro@gmail.com">
+                    Claudomiro
+                  </SelectItem>
+                </Select>
+              </SelectPrimitive.Root>
+            )}
+          />
+          {/* <Form.Field>
             <Form.Prefix>
               <Mail className="h-5 w-5" />
             </Form.Prefix>
             <Form.Input type="email" name="email" placeholder="Email" />
           </Form.Field>
-          <Form.ErrorMessage field="email" />
+            <Form.ErrorMessage field="email" /> */}
           <Form.Field>
             <Form.Prefix>
               <PhoneCall className="h-5 w-5" />
