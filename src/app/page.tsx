@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { Select } from './components/Select'
 import {
-  // Mail,
+  Pencil,
   PhoneCall,
   SendHorizonal,
   Trash2,
@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { phoneNumberMask } from '@/utils/phone'
-import { Triangle } from 'react-loader-spinner'
+import { RotatingTriangles } from 'react-loader-spinner'
 import axios from 'axios'
 import { SelectItem } from './components/Select/SelectItem'
 // import { FileList } from '/./components/Form/FileList'
@@ -36,6 +36,9 @@ const createFormSchema = z.object({
     .string()
     .nonempty({ message: 'Digite seu telefone.' })
     .min(15, { message: 'Telefone inválido, digite um telefone válido.' }),
+  message: z
+    .string()
+    .min(3, { message: 'Digite uma mensagem com mais de 3 caracteres.' }),
   anexo: z
     .custom<FileList>((list) => list instanceof FileList)
     .refine((file) => file?.length > 0, { message: 'Escolha um arquivo.' }),
@@ -67,6 +70,7 @@ export default function Home() {
       formData.append('name', data.name)
       formData.append('email', data.email)
       formData.append('cellphone', data.cellphone)
+      formData.append('message', data.message)
       formData.append('anexo', data.anexo[0])
 
       await axios.post('/api', formData)
@@ -117,7 +121,7 @@ export default function Home() {
             control={control}
             render={({ field: { ref, onChange } }) => (
               <SelectPrimitive.Root onValueChange={onChange}>
-                <Select ref={ref} placeholder="Selecione sua Profissão...">
+                <Select ref={ref} placeholder="Selecione seu contato...">
                   <SelectItem value="lcbrj@terra.com.br">
                     Claudio Contador
                   </SelectItem>
@@ -129,13 +133,7 @@ export default function Home() {
               </SelectPrimitive.Root>
             )}
           />
-          {/* <Form.Field>
-            <Form.Prefix>
-              <Mail className="h-5 w-5" />
-            </Form.Prefix>
-            <Form.Input type="email" name="email" placeholder="Email" />
-          </Form.Field>
-            <Form.ErrorMessage field="email" /> */}
+
           <Form.Field>
             <Form.Prefix>
               <PhoneCall className="h-5 w-5" />
@@ -147,6 +145,14 @@ export default function Home() {
             />
           </Form.Field>
           <Form.ErrorMessage field="cellphone" />
+
+          <Form.Field>
+            <Form.Prefix>
+              <Pencil className="h-5 w-5" />
+            </Form.Prefix>
+            <Form.TextArea name="message" placeholder="Envie sua mensagem..." />
+          </Form.Field>
+          <Form.ErrorMessage field="message" />
           {/* <Form.Field> */}
           <Form.Label
             htmlFor="anexo"
@@ -201,11 +207,11 @@ export default function Home() {
             </>
           )}
           {sppiner && (
-            <Triangle
+            <RotatingTriangles
               height="20"
               width="20"
               // radius="48"
-              color="#000"
+              // color="#000"
               ariaLabel="watch-loading"
               visible={true}
             />

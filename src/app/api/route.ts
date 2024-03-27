@@ -10,6 +10,7 @@ export async function POST(request: Request) {
   const name = formData.get('name')
   const email = formData.get('email')
   const cellphone = formData.get('cellphone')
+  const message = formData.get('message')
   const anexo: File | null = formData.get('anexo') as unknown as File
 
   const bytes = await anexo.arrayBuffer()
@@ -32,6 +33,7 @@ export async function POST(request: Request) {
     <li>Name: ${name}</li>
     <li>Email: ${email}</li>
     <li>Telefone: ${cellphone}</li>
+    <li>Mensagem: ${message}</li>
   </ul>
     <h3>Arquivos</h3>
 
