@@ -27,13 +27,12 @@ export async function POST(request: Request) {
   } as Transport)
 
   const output = `
-    <p>Você tem um novo Contato.</p>
+    <p>${message}</p>
     <h3>Detalhes do Contato</h3>
   <ul>
     <li>Name: ${name}</li>
     <li>Email: ${email}</li>
     <li>Telefone: ${cellphone}</li>
-    <li>Mensagem: ${message}</li>
   </ul>
     <h3>Arquivos</h3>
 
