@@ -36,9 +36,8 @@ const createFormSchema = z.object({
     .string()
     .nonempty({ message: 'Digite seu telefone.' })
     .min(15, { message: 'Telefone inválido, digite um telefone válido.' }),
-  message: z
-    .string()
-    .min(3, { message: 'Digite uma mensagem com mais de 3 caracteres.' }),
+  message: z.string(),
+  // .min(3, { message: 'Digite uma mensagem com mais de 3 caracteres.' }),
   anexo: z
     .custom<FileList>((list) => list instanceof FileList)
     .refine((file) => file?.length > 0, { message: 'Escolha um arquivo.' }),
