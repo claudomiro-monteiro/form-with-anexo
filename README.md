@@ -46,6 +46,7 @@ npm run lint
 form/
  ├── src/
  │   ├── app/
+ │   ├── assets/
  │   ├── utils/
  ├── public/
  └── package.json
